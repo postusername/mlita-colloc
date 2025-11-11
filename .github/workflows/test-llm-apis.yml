@@ -75,11 +75,11 @@ jobs:
 
       - name: Test Gemini API
         if: ${{ github.event.inputs.provider == 'gemini' || github.event.inputs.provider == 'both' }}
-        run: node --loader tsx test-llm.mjs gemini
+        run: npx tsx test-llm.mjs gemini
 
       - name: Test Deepseek API
         if: ${{ github.event.inputs.provider == 'deepseek' || github.event.inputs.provider == 'both' }}
-        run: node --loader tsx test-llm.mjs deepseek
+        run: npx tsx test-llm.mjs deepseek
 
       - name: Test Summary
         if: always()
