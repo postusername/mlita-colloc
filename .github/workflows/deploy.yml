@@ -31,8 +31,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Create .env.local with GEMINI_API_KEY
-        run: echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env.local
+      - name: Create .env.local with API keys
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env.local
+          echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> .env.local
 
       - name: Build
         run: npm run build

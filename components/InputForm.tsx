@@ -1,14 +1,17 @@
 import React from 'react';
 import Loader from './Loader';
+import { LLMProvider } from '../services/llmService';
 
 interface InputFormProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  llmProvider: LLMProvider;
+  onProviderChange: (provider: LLMProvider) => void;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoading }) => {
+const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoading, llmProvider, onProviderChange }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit();
@@ -16,6 +19,23 @@ const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoad
 
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <label htmlFor="llm-provider" className="block text-sm font-medium text-slate-300 mb-2">
+            LLM API:
+          </label>
+          <select
+            id="llm-provider"
+            value={llmProvider}
+            onChange={(e) => onProviderChange(e.target.value as LLMProvider)}
+            disabled={isLoading}
+            className="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none transition-shadow duration-200 text-slate-200 disabled:bg-slate-700 disabled:cursor-not-allowed"
+          >
+            <option value="gemini">Gemini</option>
+            <option value="deepseek">Deepseek</option>
+          </select>
+        </div>
+      </div>
       <textarea
         value={value}
         onChange={onChange}

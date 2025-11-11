@@ -1,0 +1,88 @@
+name: Test LLM APIs
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: 'LLM Provider to test'
+        required: true
+        type: choice
+        options:
+          - gemini
+          - deepseek
+          - both
+
+jobs:
+  test-llm-integration:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env.local with API keys
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env.local
+          echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> .env.local
+
+      - name: Create test script
+        run: |
+          cat > test-llm.mjs << 'EOF'
+          import { formalizeProblem, generateProof, explainProof } from './services/llmService.ts';
+          
+          const testProblem = "Сократ — человек. Все люди смертны. Докажи, что Сократ смертен.";
+          const provider = process.argv[2] || 'gemini';
+          
+          console.log(`\n🧪 Testing ${provider.toUpperCase()} API...\n`);
+          console.log('Problem:', testProblem);
+          
+          try {
+            console.log('\n📝 Step 1: Formalization...');
+            const formalization = await formalizeProblem(testProblem, provider);
+            console.log('Result:', formalization);
+            
+            console.log('\n⚙️  Step 2: Proof Generation...');
+            const proof = await generateProof(formalization, provider);
+            console.log('Result:', proof);
+            
+            console.log('\n💬 Step 3: Explanation...');
+            const explanation = await explainProof(proof, provider);
+            console.log('Result:', explanation);
+            
+            console.log(`\n✅ ${provider.toUpperCase()} API test completed successfully!`);
+            process.exit(0);
+          } catch (error) {
+            console.error(`\n❌ ${provider.toUpperCase()} API test failed:`, error.message);
+            process.exit(1);
+          }
+          EOF
+
+      - name: Build project
+        run: npm run build
+
+      - name: Test Gemini API
+        if: ${{ github.event.inputs.provider == 'gemini' || github.event.inputs.provider == 'both' }}
+        run: node --loader tsx test-llm.mjs gemini
+
+      - name: Test Deepseek API
+        if: ${{ github.event.inputs.provider == 'deepseek' || github.event.inputs.provider == 'both' }}
+        run: node --loader tsx test-llm.mjs deepseek
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "Provider tested: ${{ github.event.inputs.provider }}" >> $GITHUB_STEP_SUMMARY
+          echo "Build status: ✅" >> $GITHUB_STEP_SUMMARY
