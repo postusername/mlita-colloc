@@ -36,6 +36,7 @@ jobs:
         run: |
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env.local
           echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> .env.local
+          echo "DEEPSEEK_MODEL_NAME=${{ vars.DEEPSEEK_MODEL_NAME || 'deepseek/deepseek-chat-v3-0324:free' }}" >> .env.local
 
       - name: Create test script
         run: |
@@ -74,11 +75,17 @@ jobs:
 
       - name: Test Gemini API
         if: ${{ github.event.inputs.provider == 'gemini' || github.event.inputs.provider == 'both' }}
-        run: node --loader tsx test-llm.mjs gemini
+        env:
+          API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: npx tsx test-llm.mjs gemini
 
       - name: Test Deepseek API
         if: ${{ github.event.inputs.provider == 'deepseek' || github.event.inputs.provider == 'both' }}
-        run: node --loader tsx test-llm.mjs deepseek
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL_NAME: ${{ vars.DEEPSEEK_MODEL_NAME || 'deepseek/deepseek-chat-v3-0324:free' }}
+        run: npx tsx test-llm.mjs deepseek
 
       - name: Test Summary
         if: always()

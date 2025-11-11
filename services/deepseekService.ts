@@ -1,9 +1,14 @@
-if (!process.env.DEEPSEEK_API_KEY) {
-  throw new Error("DEEPSEEK_API_KEY environment variable not set");
+function getDeepseekConfig() {
+  if (!process.env.DEEPSEEK_API_KEY) {
+    throw new Error("DEEPSEEK_API_KEY environment variable not set");
+  }
+  
+  return {
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    apiUrl: "https://openrouter.ai/api/v1/chat/completions",
+    modelName: process.env.DEEPSEEK_MODEL_NAME || "deepseek/deepseek-chat-v3-0324:free"
+  };
 }
-
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
 const formalizerPrompt = `Ты — экспертный ассистент по формальной логике. Преобразуй следующую текстовую задачу в набор формул логики предикатов в клаузальной форме, готовых для метода резолюций. Это включает в себя отрицание доказываемого утверждения. Выведи ТОЛЬКО формулы, разделяя их запятыми.
 
@@ -19,15 +24,16 @@ const proofGeneratorPrompt = `Ты — симулятор движка резо�
 const explainerPrompt = `Ты — учитель логики. Объясни доказательство, представленное в виде последовательности логических шагов, как если бы ты объяснял его студенту. Будь последовательным и ясным. Используй естественный русский язык.`;
 
 async function callDeepseekAPI(systemPrompt: string, userMessage: string): Promise<string> {
+  const config = getDeepseekConfig();
   try {
-    const response = await fetch(DEEPSEEK_API_URL, {
+    const response = await fetch(config.apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Authorization': `Bearer ${config.apiKey}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: config.modelName,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
