@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { formalizeProblem, explainProof } from './services/geminiService';
+import { formalizeProblem, generateProof, explainProof } from './services/geminiService';
 import InputForm from './components/InputForm';
 import ResultCard from './components/ResultCard';
 import { TranslateIcon, CogIcon, BookOpenIcon } from './components/icons';
@@ -53,17 +53,16 @@ const App: React.FC = () => {
         ...prev.slice(1)
       ]);
 
-      // Module 2: Resolution Engine (Simulated)
-      // This is a simulation based on the example in the prompt document.
-      const simulatedProof = `[Шаг 1: Унификация {х/Сократ} в ¬Человек(x) V Смертен(х). \nШаг 2: Резолюция с Человек(Сократ) -> Смертен(Сократ). \nШаг 3: Резолюция Смертен(Сократ) и ¬Смертен(Сократ) -> Противоречие.]`;
+      // Module 2: Resolution Engine (Now dynamic)
+      const proofResult = await generateProof(formalizationResult);
       setModules(prev => [
         prev[0],
-        { ...prev[1], content: simulatedProof },
+        { ...prev[1], content: proofResult },
         ...prev.slice(2)
       ]);
 
       // Module 3: Explanation
-      const explanationResult = await explainProof(simulatedProof);
+      const explanationResult = await explainProof(proofResult);
       setModules(prev => [
         prev[0],
         prev[1],
@@ -105,7 +104,7 @@ const App: React.FC = () => {
             </div>
           )}
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="mt-8 grid grid-cols-1 gap-6">
             {modules.map((mod, index) => (
               <ResultCard
                 key={index}
