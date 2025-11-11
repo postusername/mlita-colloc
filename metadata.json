@@ -1,0 +1,5 @@
+{
+  "name": "Neuro-Symbolic Logic Solver",
+  "description": "An application that uses a Large Language Model (LLM) to translate natural language logic problems into formal predicate logic, simulates a resolution proof, and then uses another LLM to explain the proof back in natural language.",
+  "requestFramePermissions": []
+}
