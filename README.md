@@ -17,7 +17,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/19B-uGZ7jeegQtwgrBa-Y03
    `npm install`
 2. Set the API keys in [.env.local](.env.local):
    - `GEMINI_API_KEY` - Your Gemini API key
-   - `DEEPSEEK_API_KEY` - Your Deepseek API key
+   - `DEEPSEEK_API_KEY` - Your OpenRouter API key (for DeepSeek via OpenRouter)
+   - `DEEPSEEK_MODEL_NAME` - (Optional) DeepSeek model name, defaults to `deepseek/deepseek-chat-v3-0324:free`
 3. Run the app:
    `npm run dev`
 
@@ -30,10 +31,12 @@ This repository includes an automated deployment workflow for GitHub Pages.
 1. Go to your repository **Settings** → **Secrets and variables** → **Actions**
 2. Add the following repository secrets:
    - `GEMINI_API_KEY` - Your Gemini API key
-   - `DEEPSEEK_API_KEY` - Your Deepseek API key
-3. Go to **Settings** → **Pages**
-4. Under **Source**, select **GitHub Actions**
-5. Push to the `main` branch or manually trigger the workflow
+   - `DEEPSEEK_API_KEY` - Your OpenRouter API key (for DeepSeek via OpenRouter)
+3. Add the following repository variables (in the "Variables" tab):
+   - `DEEPSEEK_MODEL_NAME` - (Optional) DeepSeek model name, defaults to `deepseek/deepseek-chat-v3-0324:free`
+4. Go to **Settings** → **Pages**
+5. Under **Source**, select **GitHub Actions**
+6. Push to the `main` branch or manually trigger the workflow
 
 ### Deployment
 
