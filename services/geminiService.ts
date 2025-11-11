@@ -1,10 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
+let ai: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+function getAI(): GoogleGenAI {
+  if (!ai) {
+    if (!process.env.API_KEY) {
+      throw new Error("API_KEY environment variable not set");
+    }
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  }
+  return ai;
+}
 
 const formalizerPrompt = `Ты — экспертный ассистент по формальной логике. Преобразуй следующую текстовую задачу в набор формул логики предикатов в клаузальной форме, готовых для метода резолюций. Это включает в себя отрицание доказываемого утверждения. Выведи ТОЛЬКО формулы, разделяя их запятыми.
 
@@ -26,7 +32,7 @@ const explainerPrompt = `Ты — учитель логики. Объясни д
  */
 export async function formalizeProblem(problemText: string): Promise<string> {
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: 'gemini-2.5-flash-lite',
       contents: problemText,
       config: {
@@ -47,7 +53,7 @@ export async function formalizeProblem(problemText: string): Promise<string> {
  */
 export async function generateProof(formalFormulas: string): Promise<string> {
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: 'gemini-2.5-flash-lite',
       contents: formalFormulas,
       config: {
@@ -69,7 +75,7 @@ export async function generateProof(formalFormulas: string): Promise<string> {
  */
 export async function explainProof(proofText: string): Promise<string> {
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: 'gemini-2.5-flash-lite',
       contents: proofText,
       config: {
