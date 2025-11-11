@@ -3,7 +3,8 @@ if (!process.env.DEEPSEEK_API_KEY) {
 }
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const DEEPSEEK_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+const DEEPSEEK_MODEL_NAME = process.env.DEEPSEEK_MODEL_NAME || "deepseek/deepseek-chat-v3-0324:free";
 
 const formalizerPrompt = `Ты — экспертный ассистент по формальной логике. Преобразуй следующую текстовую задачу в набор формул логики предикатов в клаузальной форме, готовых для метода резолюций. Это включает в себя отрицание доказываемого утверждения. Выведи ТОЛЬКО формулы, разделяя их запятыми.
 
@@ -27,7 +28,7 @@ async function callDeepseekAPI(systemPrompt: string, userMessage: string): Promi
         'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: DEEPSEEK_MODEL_NAME,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }

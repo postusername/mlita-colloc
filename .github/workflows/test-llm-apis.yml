@@ -36,6 +36,7 @@ jobs:
         run: |
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env.local
           echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> .env.local
+          echo "DEEPSEEK_MODEL_NAME=${{ vars.DEEPSEEK_MODEL_NAME || 'deepseek/deepseek-chat-v3-0324:free' }}" >> .env.local
 
       - name: Create test script
         run: |
