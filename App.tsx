@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { formalizeProblem, generateProof, explainProof } from './services/geminiService';
+import { formalizeProblem, generateProof, explainProof, LLMProvider } from './services/llmService';
 import InputForm from './components/InputForm';
 import ResultCard from './components/ResultCard';
 import { TranslateIcon, CogIcon, BookOpenIcon } from './components/icons';
@@ -12,6 +12,7 @@ type ModuleState = {
 
 const App: React.FC = () => {
   const [problemText, setProblemText] = useState<string>("Сократ — человек. Все люди смертны. Докажи, что Сократ смертен.");
+  const [llmProvider, setLlmProvider] = useState<LLMProvider>('gemini');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,14 +48,14 @@ const App: React.FC = () => {
 
     try {
       // Module 1: Formalization
-      const formalizationResult = await formalizeProblem(problemText);
+      const formalizationResult = await formalizeProblem(problemText, llmProvider);
       setModules(prev => [
         { ...prev[0], content: formalizationResult },
         ...prev.slice(1)
       ]);
 
       // Module 2: Resolution Engine (Now dynamic)
-      const proofResult = await generateProof(formalizationResult);
+      const proofResult = await generateProof(formalizationResult, llmProvider);
       setModules(prev => [
         prev[0],
         { ...prev[1], content: proofResult },
@@ -62,7 +63,7 @@ const App: React.FC = () => {
       ]);
 
       // Module 3: Explanation
-      const explanationResult = await explainProof(proofResult);
+      const explanationResult = await explainProof(proofResult, llmProvider);
       setModules(prev => [
         prev[0],
         prev[1],
@@ -76,7 +77,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [problemText]);
+  }, [problemText, llmProvider]);
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200 flex flex-col items-center p-4 sm:p-6 lg:p-8">
@@ -96,6 +97,8 @@ const App: React.FC = () => {
             onChange={(e) => setProblemText(e.target.value)}
             onSubmit={handleSolve}
             isLoading={isLoading}
+            llmProvider={llmProvider}
+            onProviderChange={setLlmProvider}
           />
           
           {error && (

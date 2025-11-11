@@ -15,7 +15,9 @@ View your app in AI Studio: https://ai.studio/apps/drive/19B-uGZ7jeegQtwgrBa-Y03
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Set the API keys in [.env.local](.env.local):
+   - `GEMINI_API_KEY` - Your Gemini API key
+   - `DEEPSEEK_API_KEY` - Your Deepseek API key
 3. Run the app:
    `npm run dev`
 
@@ -25,9 +27,13 @@ This repository includes an automated deployment workflow for GitHub Pages.
 
 ### Setup
 
-1. Go to your repository **Settings** → **Pages**
-2. Under **Source**, select **GitHub Actions**
-3. Push to the `main` branch or manually trigger the workflow
+1. Go to your repository **Settings** → **Secrets and variables** → **Actions**
+2. Add the following repository secrets:
+   - `GEMINI_API_KEY` - Your Gemini API key
+   - `DEEPSEEK_API_KEY` - Your Deepseek API key
+3. Go to **Settings** → **Pages**
+4. Under **Source**, select **GitHub Actions**
+5. Push to the `main` branch or manually trigger the workflow
 
 ### Deployment
 
