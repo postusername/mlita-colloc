@@ -170,6 +170,9 @@ export async function generateProof(formalFormulas: string): Promise<string> {
       config: {
         systemInstruction: proofGeneratorPrompt,
         temperature: 0,
+        thinkingConfig: {
+          includeThoughts: true,
+        },
       },
     });
     return response.text.trim();
@@ -193,6 +196,9 @@ export async function explainProof(proofText: string): Promise<string> {
       config: {
         systemInstruction: explainerPrompt,
         temperature: 0.3,
+        thinkingConfig: {
+          includeThoughts: true,
+        },
       },
     });
     return response.text.trim();
