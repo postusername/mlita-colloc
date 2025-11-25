@@ -145,7 +145,9 @@ export async function formalizeProblem(problemText: string): Promise<string> {
       config: {
         systemInstruction: formalizerPrompt,
         temperature: 0,
-        thinkingConfig: true
+        thinkingConfig: {
+          includeThoughts: true,
+        },
       },
     });
     return response.text.trim();
