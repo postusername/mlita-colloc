@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { formalizeProblem, generateProof, explainProof, LLMProvider } from './services/llmService';
+import { main as resolutionSolver } from './services/resolutionSolver';
 import InputForm from './components/InputForm';
 import ResultCard from './components/ResultCard';
 import { TranslateIcon, CogIcon, BookOpenIcon } from './components/icons';
@@ -13,6 +14,7 @@ type ModuleState = {
 const App: React.FC = () => {
   const [problemText, setProblemText] = useState<string>("Сократ — человек. Все люди смертны. Докажи, что Сократ смертен.");
   const [llmProvider, setLlmProvider] = useState<LLMProvider>('gemini');
+  const [resolutionEngine, setResolutionEngine] = useState<'neuro' | 'programmatic'>('neuro');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,8 +56,22 @@ const App: React.FC = () => {
         ...prev.slice(1)
       ]);
 
+      if (formalizationResult === 'NON_LOGIC_TEXT') {
+        setModules(prev => [
+          prev[0],
+          { ...prev[1], content: 'NON_LOGIC_TEXT' },
+          { ...prev[2], content: 'NON_LOGIC_TEXT' },
+        ]);
+        return;
+      }
+
       // Module 2: Resolution Engine (Now dynamic)
-      const proofResult = await generateProof(formalizationResult, llmProvider);
+      let proofResult;
+      if (resolutionEngine === 'neuro') {
+        proofResult = await generateProof(formalizationResult, llmProvider);
+      } else {
+        proofResult = resolutionSolver(formalizationResult);
+      }
       setModules(prev => [
         prev[0],
         { ...prev[1], content: proofResult },
@@ -77,7 +93,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [problemText, llmProvider]);
+  }, [problemText, llmProvider, resolutionEngine]);
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200 flex flex-col items-center p-4 sm:p-6 lg:p-8">
@@ -99,6 +115,8 @@ const App: React.FC = () => {
             isLoading={isLoading}
             llmProvider={llmProvider}
             onProviderChange={setLlmProvider}
+            resolutionEngine={resolutionEngine}
+            onEngineChange={setResolutionEngine}
           />
           
           {error && (
