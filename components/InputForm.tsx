@@ -34,7 +34,7 @@ const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoad
             className="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none transition-shadow duration-200 text-slate-200 disabled:bg-slate-700 disabled:cursor-not-allowed"
           >
             <option value="gemini">Gemini</option>
-            <option value="deepseek">Deepseek</option>
+            <option value="deepseek">YandexGPT</option>
           </select>
         </div>
         <div className="flex-1">
