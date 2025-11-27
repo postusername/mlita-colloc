@@ -54,6 +54,15 @@ const App: React.FC = () => {
         ...prev.slice(1)
       ]);
 
+      if (formalizationResult === 'NON_LOGIC_TEXT') {
+        setModules(prev => [
+          prev[0],
+          { ...prev[1], content: 'NON_LOGIC_TEXT' },
+          { ...prev[2], content: 'NON_LOGIC_TEXT' },
+        ]);
+        return;
+      }
+
       // Module 2: Resolution Engine (Now dynamic)
       const proofResult = await generateProof(formalizationResult, llmProvider);
       setModules(prev => [
