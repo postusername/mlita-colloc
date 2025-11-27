@@ -9,9 +9,11 @@ interface InputFormProps {
   isLoading: boolean;
   llmProvider: LLMProvider;
   onProviderChange: (provider: LLMProvider) => void;
+  resolutionEngine: 'neuro' | 'programmatic';
+  onEngineChange: (engine: 'neuro' | 'programmatic') => void;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoading, llmProvider, onProviderChange }) => {
+const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoading, llmProvider, onProviderChange, resolutionEngine, onEngineChange }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit();
@@ -34,6 +36,21 @@ const InputForm: React.FC<InputFormProps> = ({ value, onChange, onSubmit, isLoad
             <option value="gemini">Gemini</option>
             <option value="deepseek">Deepseek</option>
           </select>
+        </div>
+        <div className="flex-1">
+            <label htmlFor="resolution-engine" className="block text-sm font-medium text-slate-300 mb-2">
+                Модуль 2:
+            </label>
+            <select
+                id="resolution-engine"
+                value={resolutionEngine}
+                onChange={(e) => onEngineChange(e.target.value as 'neuro' | 'programmatic')}
+                disabled={isLoading}
+                className="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none transition-shadow duration-200 text-slate-200 disabled:bg-slate-700 disabled:cursor-not-allowed"
+            >
+                <option value="neuro">Нейро</option>
+                <option value="programmatic">Программный</option>
+            </select>
         </div>
       </div>
       <textarea
